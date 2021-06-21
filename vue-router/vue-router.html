@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <script type="text/javascript" src="../node_modules/vue/dist/vue.js"></script>
+    <script type="text/javascript" src="../node_modules/vue-router/dist/vue-router.js"></script>
+</head>
+<body>
+    <div id="app"></div>
+
+    <script type="text/javascript">
+        // Vue.use(VueRouter)
+
+        var Login = {
+            template: `<div>login component</div>`
+        }
+
+        var Register = {
+            template: `<div>register component</div>`
+        }
+
+        var router = new VueRouter({
+            routes: [
+                {
+                    path: '/login',
+                    component: Login
+                },
+                {
+                    path: '/register',
+                    component: Register
+                }
+            ]
+        })
+
+        var App = {
+            template:  `
+                <div>
+                    <router-link to="/login">login</router-link>
+                    <router-link to="/register">register</router-link>
+                    <router-view></router-view>
+                </div>
+            `
+        }
+
+        new Vue({
+            el: '#app',
+            data() {
+                return {
+                }
+            },
+            components: {
+                App
+            },
+            router: router,
+            template: '<App/>'
+        })
+    </script>
+</body>
+</html>

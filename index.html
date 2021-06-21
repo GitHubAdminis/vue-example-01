@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script type="text/javascript" src="./node_modules/vue/dist/vue.js"></script>
+</head>
+<body>
+    <div id="app"></div>
+
+    <script type="text/javascript">
+
+        // global compontent
+        Vue.component('Vbutton', {
+            template: `
+                <button class="el-button"
+                    :class="el_button_type === 'primary' ? 'el-button--primary'
+                    : el_button_type === 'success' ? 'el-button--success' : ''">
+                    <slot>default btn</slot>
+                </button>
+            `,
+            props: {
+                el_button_type: String
+            }
+        })
+
+        let VScrollToTopComponent = {
+            data() {
+                return {
+                    msg: ''
+                }
+            },
+            props: {
+                child_data: String
+            },
+            filters: {
+                filter_str_add$(val) {
+                    console.log('val: ', val)
+                    return val.split('').reverse().join('')
+                }
+            },
+            template: `<div class="to-top">
+                <div>Hi {{child_data | filter_str_add$}}</div>
+                <span @click="changeValue(child_data)">Top</span>
+                <input v-model="child_data" @input="changeValue(child_data)"/>
+            </div>`,
+            methods: {
+                changeValue(child_data) {
+                    this.$emit('HandleChild', child_data)
+                }
+            }
+        }
+
+        let Header_component = {
+            data() {
+                return {
+                }
+            },
+            template: `
+                <div>
+                    <h1 style="text-align: center;">Header</h1>
+                    <span>Home</span>
+                    <span>About</span>
+                </div>
+            `
+        }
+
+        let Vaside_component = {
+            data() {
+                return {
+                    el_button_type_value: 'primary',
+                    msg: '',
+                    stus: [
+                        {
+                            name: 'jack'
+                        }
+                    ]
+                }
+            },
+            watch: {
+                msg(newValue, oldValue) {
+                  console.log(newValue, oldValue)
+
+                  if (newValue === 'aSir') {
+                      console.log('aSir is coming!')
+                  }
+                },
+                stus: {
+                    deep: true,
+                    handler(newValue, oldValue) {
+                        console.log(newValue, oldValue)
+                    }
+                }
+            },
+            beforeCreate() {
+                console.log('beforeCreate')
+                console.log('beforeCreate this: ', this.el_button_type_value)
+            },
+            created() {
+                console.log('created!')
+                console.log('created this: ', this.el_button_type_value)
+            },
+            beforeMount() {
+                console.log('beforeMount')
+                console.log(document.getElementById('app'))
+            },
+            mounted() {
+                console.log('mounted!')
+                console.log(document.getElementById('app'))
+                console.log('ref: ', this.$refs.btn);
+            },
+            beforeUpdate() {
+                console.log('1',document.getElementById('app').innerHTML)
+            },
+            updated() {
+                console.log('2', document.getElementById('app').innerHTML)
+            },
+            deactivated() {
+                console.log('deactivated')
+            },
+            activated() {
+                console.log('activated')
+            },
+            beforeDestroy() {
+                console.log('beforeDestroy!')
+            },
+            destroyed() {
+                console.log('destroyed!')
+            },
+            methods: {
+                changeHandle() {
+                    console.log('ref: ', this.$refs.btn);
+                    this.stus[0].name = 'bala'
+                }
+            },
+            template: `
+                <div class='aside'>
+                    <span>Aside</span>
+                    <div>
+                        <Vbutton :el_button_type="el_button_type_value">Aside Button</Vbutton>
+                        <input v-model="msg" />
+                        <h2>{{msg}}</h2>
+                        <button ref="btn" @click="changeHandle">Change</button>
+                        <h3>{{stus[0].name}}</h3>
+                    </div>
+                </div>
+            `
+        }
+
+        let Vbody_component = {
+            data() {
+                return {
+                    msg: 'child data!',
+                    isShow: false
+                }
+            },
+            components: {
+                VScrollToTopComponent
+            },
+            template: `
+                <div class='body'>
+                    <span>Body</span>
+                    <div>
+                        <Vbutton el_button_type="success">slot button 01</Vbutton>
+                        <Vbutton>slot button 02</Vbutton>
+                        <Vbutton>Default</Vbutton>
+                    </div>
+                    <div>
+                        <VScrollToTopComponent :child_data="msg" @HandleChild="childHandler">
+                        </VScrollToTopComponent>
+                    </div>
+                    <div>
+                        <input v-show="isShow" ref="input"></input>    
+                    </div>
+                    <a href="#login">login</a>
+                    <a href="#register">register</a>
+                </div>
+            `,
+            methods: {
+                childHandler(data) {
+                    console.log('child input value: ', data);
+                }
+            },
+            mounted() {
+                this.isShow = true
+                console.log('input: ', this.$refs.input);
+
+                this.$nextTick(() => {
+                    this.$refs.input.focus()
+                })
+            }
+        }
+
+        let Footer_component = {
+            data() {
+                return {
+                }
+            },
+            template: `
+                <div>
+                    <h1 style="text-align: center;">footer</h1>
+                    <h2>friendly links</h2>
+                    <ul>
+                        <li>Google</li>
+                        <li>Apple</li>
+                        <li>Amazon</li>
+                        <li>Microsoft</li>
+                    </ul>
+                </div>
+            `
+        }
+
+        // 创建实例化对象
+        let vm = new Vue({
+            el: '#app', // 目的地
+            data: function() {
+                return {
+                    message: 'messa',
+                    isTrue: 1 == '1',
+                    str: 'helloVue',
+                    input_value: 'bala',
+                    person_data: {
+                        name: 'alan',
+                        age: '22',
+                        favorite: 'av'
+                    },
+
+                    isTrue: true
+                }
+            },
+            components: {
+                Header_component,
+                Vaside_component,
+                Vbody_component,
+                Footer_component
+            },
+            template: `
+                <div>
+                    <Header_component></Header_component>
+                    <div class="container">
+                        <keep-alive>
+                            <Vaside_component v-if="isTrue"></Vaside_component>
+                        </keep-alive>
+                        <button @click="isTrue = !isTrue">change isTrue</button>
+                        <Vbody_component></Vbody_component>
+                    </div>
+                    <Footer_component></Footer_component>
+                </div>
+            `
+        })
+        console.log('vm: ', vm);
+        console.log('vm: ', vm.$el);
+    </script>
+
+</body>
+
+<style>
+    .container {
+        display: flex;
+        height: 40vh;
+    }
+    .container .aside {
+        flex: 2;
+        background-color: aliceblue;
+    }
+
+    .container .body {
+        flex: 8;
+        background-color: antiquewhite;
+    }
+
+    .container .body .to-top {
+        /* position: fixed; */
+        right: 50px;
+        bottom: 55vh;
+        /* background-color: aqua; */
+    }
+
+    .el-button {
+        display: inline-block;
+        line-height: 1;
+        white-space: nowrap;
+        cursor: pointer;
+        background: #fff;
+        border: 1px solid #dcdfe6;
+        color: #606266;
+        -webkit-appearance: none;
+        text-align: center;
+        box-sizing: border-box;
+        outline: none;
+        margin: 0;
+        transition: .1s;
+        font-weight: 500;
+        -moz-user-select: none;
+        -webkit-user-select: none;
+        -ms-user-select: none;
+        padding: 12px 20px;
+        font-size: 14px;
+        border-radius: 4px;
+    }
+
+
+    .el-button:focus, .el-button:hover {
+        color: #409eff;
+        border-color: #c6e2ff;
+        background-color: #ecf5ff;
+    }
+
+    .el-button:active {
+        color: #3a8ee6;
+        border-color: #3a8ee6;
+        outline: none;
+    }
+
+    .el-button--primary {
+        color: #fff;
+        background-color: #409eff;
+        border-color: #409eff;
+    }
+
+    .el-button--primary:focus, .el-button--primary:hover {
+        background: #66b1ff;
+        border-color: #66b1ff;
+        color: #fff;
+    }
+
+    .el-button--primary:active {
+        background: #3a8ee6;
+        border-color: #3a8ee6;
+        color: #fff;
+    }
+
+    .el-button--success {
+        color: #fff;
+        background-color: #67c23a;
+        border-color: #67c23a;
+    }
+
+    .el-button--success:focus, .el-button--success:hover {
+        background: #85ce61;
+        border-color: #85ce61;
+        color: #fff;
+    }
+
+    .el-button--success:active {
+        background: #5daf34;
+        border-color: #5daf34;
+        color: #fff;
+    }
+</style>
+
+</html>
