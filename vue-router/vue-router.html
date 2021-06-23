@@ -15,6 +15,10 @@
     <script type="text/javascript">
         // Vue.use(VueRouter)
 
+        let Home = {
+            template: `<div>Home component</div>`
+        }
+
         var Login = {
             template: `<div>login component</div>`
         }
@@ -23,15 +27,44 @@
             template: `<div>register component</div>`
         }
 
+        let User_params = {
+            template: `<div>user_params component</div>`,
+            mounted() {
+                console.log('this.$route: ', this.$route);
+                console.log('this.$router: ', this.$router);
+            }
+        }
+
+        let User_query = {
+            template: `<div>user_query component</div>`
+        }
+
         var router = new VueRouter({
             routes: [
                 {
                     path: '/login',
+                    name: 'login_name',
                     component: Login
+                },
+                {
+                    // 动态路由参数
+                    path: '/user/:id',
+                    name: 'user_params_name',
+                    component: User_params
+                },
+                {
+                    // 动态路由参数
+                    path: '/user',
+                    name: 'user_query_name',
+                    component: User_query
                 },
                 {
                     path: '/register',
                     component: Register
+                },
+                {
+                    path: '/',
+                    component: Home
                 }
             ]
         })
@@ -39,7 +72,10 @@
         var App = {
             template:  `
                 <div>
-                    <router-link to="/login">login</router-link>
+                    <router-link to="/">Home</router-link>
+                    <router-link :to="{name: 'login_name'}">login</router-link>
+                    <router-link :to="{name: 'user_params_name', params: {id: 101}}">User_params</router-link>
+                    <router-link :to="{name: 'user_query_name', query: {userId: 102}}">User_query</router-link>
                     <router-link to="/register">register</router-link>
                     <router-view></router-view>
                 </div>
