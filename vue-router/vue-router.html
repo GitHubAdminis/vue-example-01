@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
 
@@ -15,8 +14,46 @@
     <script type="text/javascript">
         // Vue.use(VueRouter)
 
+        let Index = {
+            template: `<div>Index</div>`
+        }
+
         let Home = {
-            template: `<div>Home component</div>`
+            template: `<div>
+                Home component<br/>
+                <router-link to="/home/iPhone">iPhone</router-link>
+                <router-link to="/home/iPad">iPad</router-link>
+                <router-link to="/home/Mac">Mac</router-link>
+                <router-link to="/home/Watch">Watch</router-link>
+                <router-link to="/home/Airpods">Airpods</router-link>
+                <router-view></router-view>
+            </div>`
+        }
+
+        let iPhone = {
+            template:  `
+                <div>iPhone side</div>
+            `
+        }
+        let iPad = {
+            template:  `
+                <div>iPad side</div>
+            `
+        }
+        let Mac = {
+            template:  `
+                <div>Mac side</div>
+            `
+        }
+        let Watch = {
+            template:  `
+                <div>Watch side</div>
+            `
+        }
+        let Airpods = {
+            template:  `
+                <div>Airpods side</div>
+            `
         }
 
         var Login = {
@@ -64,7 +101,33 @@
                 },
                 {
                     path: '/',
-                    component: Home
+                    component: Index
+                },
+                {
+                    path: '/home',
+                    component: Home,
+                    children: [
+                        {
+                            path: 'iPhone',
+                            component: iPhone
+                        },
+                        {
+                            path: 'iPad',
+                            component: iPad
+                        },
+                        {
+                            path: 'Watch',
+                            component: Watch
+                        },
+                        {
+                            path: 'Mac',
+                            component: Mac
+                        },
+                        {
+                            path: 'Airpods',
+                            component: Airpods
+                        }
+                    ]
                 }
             ]
         })
@@ -72,10 +135,11 @@
         var App = {
             template:  `
                 <div>
-                    <router-link to="/">Home</router-link>
+                    <router-link to="/">Index</router-link>
+                    <router-link to="/home">Home</router-link>
                     <router-link :to="{name: 'login_name'}">login</router-link>
                     <router-link :to="{name: 'user_params_name', params: {id: 101}}">User_params</router-link>
-                    <router-link :to="{name: 'user_query_name', query: {userId: 102}}">User_query</router-link>
+                    <router-link :to="{name: 'user_query_name', query: {userId: 101}}">User_query</router-link>
                     <router-link to="/register">register</router-link>
                     <router-view></router-view>
                 </div>
