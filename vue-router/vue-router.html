@@ -7,6 +7,9 @@
 
     <script type="text/javascript" src="../node_modules/vue/dist/vue.js"></script>
     <script type="text/javascript" src="../node_modules/vue-router/dist/vue-router.js"></script>
+
+    <!-- axios -->
+    <script type="text/javascript" src="../node_modules/axios/dist/axios.js"></script>
 </head>
 <body>
     <div id="app"></div>
@@ -16,6 +19,58 @@
 
         let Index = {
             template: `<div>Index</div>`
+        }
+
+        let comDesc = {
+            template: `<div>
+                comDesc
+                <div>{{ msg }}</div>
+            </div>`,
+            data() {
+                return {
+                    msg: 'default'
+                }
+            },
+            created() {
+                console.log(this.$route.params.id);
+                this.msg = this.$route.params.id === 'frontend' ? 'frontend' : 'backend'
+
+                var login_request = axios.post('http://139.196.50.0:1024/api/private/v1/login', {
+                    password: "123456",
+                    username: "admin"
+                })
+                var menu_request = axios({
+                    url: 'http://139.196.50.0:1024/api/private/v1/menus',
+                    methods: 'post',
+                    headers: {'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOjUwMCwicmlkIjowLCJpYXQiOjE2MjUzOTg3MjUsImV4cCI6MTYyNTQ4NTEyNX0.j5aEQsiaR4YREwef0HOP65eYVFhNs0s4wZfyokXGsSU'},
+                    data: {
+                        name: '1'
+                    },
+                    transformRequest: [function(params) {
+                        console.log('params: ', params);
+                        params.name = '101'
+                        return params
+                    }]
+                })
+
+                Promise.all([login_request, menu_request]).then(res => {
+                    console.log('Promise.all res: ', res);
+                    var login_res = res[0]
+                    var menu_res = res[1]
+                    console.log('login_res: ', login_res);
+                    console.log('menu_res: ', menu_res);
+                }).catch(err => {
+                    console.log('err: ', err);
+                })
+            },
+            watch: {
+                '$route' (to, from) {
+                    // 对路由变化做出响应...
+                    console.log('to: ', to);
+                    // console.log('from: ', from);
+                    this.msg = to.params.id === 'frontend' ? 'frontend' : 'backend'
+                }
+            }
         }
 
         let Home = {
@@ -57,11 +112,11 @@
         }
 
         var Login = {
-            template: `<div>login component</div>`
-        }
-
-        var Register = {
-            template: `<div>register component</div>`
+            template: `<div id="login">login component <br/>
+                <router-link :to="{name: 'comDesc', params: {id: 'frontend'}}">Frontend</router-link>
+                <router-link :to="{name: 'comDesc', params: {id: 'backend'}}">backend</router-link>
+                <router-view></router-view>
+            </div>`
         }
 
         let User_params = {
@@ -77,11 +132,19 @@
         }
 
         var router = new VueRouter({
+            // mode: 'history',
             routes: [
                 {
                     path: '/login',
                     name: 'login_name',
-                    component: Login
+                    component: Login,
+                    children: [
+                        {
+                            name: 'comDesc',
+                            path: '/login/:id',
+                            component: comDesc
+                        }
+                    ]
                 },
                 {
                     // 动态路由参数
@@ -94,10 +157,6 @@
                     path: '/user',
                     name: 'user_query_name',
                     component: User_query
-                },
-                {
-                    path: '/register',
-                    component: Register
                 },
                 {
                     path: '/',
@@ -140,18 +199,19 @@
                     <router-link :to="{name: 'login_name'}">login</router-link>
                     <router-link :to="{name: 'user_params_name', params: {id: 101}}">User_params</router-link>
                     <router-link :to="{name: 'user_query_name', query: {userId: 101}}">User_query</router-link>
-                    <router-link to="/register">register</router-link>
                     <router-view></router-view>
                 </div>
             `
         }
+        router.beforeEach((to, from, next) => {
+            console.log('to: ', to);
+            console.log('from: ', from);
+            // ...
+            next()
+        })
 
         new Vue({
             el: '#app',
-            data() {
-                return {
-                }
-            },
             components: {
                 App
             },
